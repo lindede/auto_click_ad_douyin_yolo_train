@@ -1,0 +1,23 @@
+names:
+- system_time
+- earning_task_ready_button
+- earning_task_waiting_button
+- coins
+- watch_ad_to_earn_button
+- happy_to_receive_button
+- rate_and_get_coins_button
+- ad_title
+- get_reward_ready_button
+- get_reward_waiting_button
+- receive_reward_to_next_adA_button
+- insist_exit_button
+- douyin_home_button
+- douyin_me_button
+- douyin_lite_lanch_icon
+- kuaishou_lite_lanch_icon
+- open_box_for_coins_button
+- open_box_for_coins_waiting_button
+nc: 18
+path: D:\ldd\AI\app\auto_click_ad_douyin_yolo_train\datasets\detection
+train: images/train
+val: images/val

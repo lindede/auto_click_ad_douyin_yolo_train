@@ -1,0 +1,48 @@
+
+1.大模型会弄错训练yolo分类时输出的混淆矩阵的坐标系，实际情况时x轴时真值，y轴是预测值
+2.训练yolo检测时，训练集的图片和正确结果必须一一匹配，缺少正确结果会默认没有检测框，会导致训练失败
+
+
+auto_click_ad_douyin_yolo_train/
+├── configs/
+│   ├── labels.py          ← 所有标签枚举（唯一数据源）
+│   └── settings.py        ← 全局配置（分辨率/路径/超参数）
+├── tools/
+│   ├── cls_annotator.py   ← 🖼️ 快速分类标注GUI（键盘驱动）
+│   ├── dataset_builder.py ← 📦 数据集构建（生成yaml + 划分train/val）
+│   └── det_review_tool.py ← 🎯 半自动检测标注审核工具
+├── train/
+│   ├── train_cls.py       ← 分类模型训练
+│   └── train_det.py       ← 检测模型训练
+├── export/
+│   └── export_onnx.py     ← ONNX导出
+├── inference/
+│   └── predictor.py       ← 两阶段推理封装
+└── requirements.txt
+
+
+第一步 — 安装依赖
+
+pip install -r requirements.txt
+第二步 — 分类标注（把你现有的截图放入 datasets/raw/）
+
+python tools/cls_annotator.py --src datasets/raw
+# 按数字键 1-8 分类，自动保存到 datasets/cls_annotations.json
+第三步 — 构建分类数据集 + 训练
+
+python tools/dataset_builder.py --task cls
+python train/train_cls.py
+第四步 — 冷启动检测标注（手工画框，初始约30张/类）
+
+python tools/det_review_tool.py  # 纯手工模式
+python train/train_det.py        # 训练初始检测模型
+第五步 — 半自动检测标注（用初始模型加速）
+
+python tools/det_review_tool.py --model runs/det/det_v1/weights/best.pt
+# 按 A 键自动预标注 → 人工审核修改 → N 保存下一张
+第六步 — 导出推理
+
+python export/export_onnx.py --weights runs/cls/cls_v1/weights/best.pt --task cls
+python export/export_onnx.py --weights runs/det/det_v1/weights/best.pt --task det
+下一步你想做什么？ 可以直接开始跑分类标注工具，也可以先告诉我你的截图数据存放在哪里，我来帮你调整 --src 路径。
+
