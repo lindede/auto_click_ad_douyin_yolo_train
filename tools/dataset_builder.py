@@ -20,8 +20,10 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from configs.labels import PageClass, DetClass
-from configs.settings import (CLS_MANIFEST, CLS_DIR, DET_DIR,
-                               TRAIN_RATIO, ROOT)
+from configs.settings import (CLS_MANIFEST, CLS_DIR, DET_DIR, RAW_DIR,
+                               RAW_DET_LABELS, TRAIN_RATIO, ROOT)
+
+IMG_EXTS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp'}
 
 
 # ── 分类数据集构建 ─────────────────────────────────────────────
@@ -96,11 +98,14 @@ def build_cls_dataset(seed: int = 42) -> None:
 
 
 # ── 检测数据集目录初始化 ───────────────────────────────────────
-def build_det_dataset() -> None:
-    """创建检测数据集目录结构并生成 YAML 配置。"""
+def build_det_dataset(seed: int = 42) -> None:
+    """创建检测目录、从 raw + raw_det_labels 按 TRAIN_RATIO 随机划分复制，并生成 YAML。"""
     for split in ('train', 'val'):
-        (DET_DIR / 'images' / split).mkdir(parents=True, exist_ok=True)
-        (DET_DIR / 'labels' / split).mkdir(parents=True, exist_ok=True)
+        for kind in ('images', 'labels'):
+            d = DET_DIR / kind / split
+            if d.exists():
+                shutil.rmtree(d)
+            d.mkdir(parents=True, exist_ok=True)
 
     yaml_path = ROOT / 'configs' / 'det_dataset.yaml'
     cfg = {
@@ -112,11 +117,41 @@ def build_det_dataset() -> None:
     }
     yaml_path.write_text(yaml.dump(cfg, allow_unicode=True, default_flow_style=False),
                          encoding='utf-8')
-    print(f"✓ 检测数据集目录已创建: {DET_DIR}")
-    print(f"  结构: images/train  images/val  labels/train  labels/val")
+    print(f"✓ 检测数据集目录已就绪: {DET_DIR}")
     print(f"✓ 配置文件已生成: {yaml_path}")
-    print(f"  → 请将图片放入 images/train(val)，标注文件(.txt)放入 labels/train(val)")
 
+    if not RAW_DIR.is_dir():
+        print(f"[错误] 图片目录不存在: {RAW_DIR}")
+        return
+
+    pairs: list[tuple[Path, Path]] = []
+    skipped = 0
+    for img in sorted(p for p in RAW_DIR.rglob('*') if p.suffix.lower() in IMG_EXTS):
+        lf = RAW_DET_LABELS / (img.stem + '.txt')
+        if lf.is_file():
+            pairs.append((img, lf))
+        else:
+            skipped += 1
+    if skipped:
+        print(f"[警告] {skipped} 张图片在 {RAW_DET_LABELS} 无同名 .txt，已跳过")
+
+    if not pairs:
+        print("[错误] 没有可复制的「图片+标注」对，请检查 raw 与 raw_det_labels")
+        return
+
+    random.seed(seed)
+    random.shuffle(pairs)
+    n_train = max(1, int(len(pairs) * TRAIN_RATIO))
+    train_pairs, val_pairs = pairs[:n_train], pairs[n_train:]
+
+    for split, plist in ('train', train_pairs), ('val', val_pairs):
+        for img, lf in plist:
+            shutil.copy2(img, DET_DIR / 'images' / split / img.name)
+            shutil.copy2(lf, DET_DIR / 'labels' / split / (img.stem + '.txt'))
+
+    print(f"\n检测集划分（TRAIN_RATIO={TRAIN_RATIO}, seed={seed}）:")
+    print(f"  train: {len(train_pairs)} 对  |  val: {len(val_pairs)} 对")
+    print(f"  来源: {RAW_DIR} + {RAW_DET_LABELS}")
 
 # ── 入口 ───────────────────────────────────────────────────────
 def main():
@@ -136,7 +171,7 @@ def main():
         print("\n" + "=" * 56)
         print("  初始化检测数据集目录")
         print("=" * 56)
-        build_det_dataset()
+        build_det_dataset(seed=args.seed)
 
 
 if __name__ == '__main__':

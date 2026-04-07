@@ -27,6 +27,7 @@ DET_MODEL_BASE = "yolo11n.pt"
 # ── 数据集路径 ───────────────────────────────────────────────
 DATASETS_DIR = ROOT / "datasets"
 RAW_DIR      = DATASETS_DIR / "raw"        # 原始截图目录（按需子文件夹）
+RAW_DET_LABELS = DATASETS_DIR / "raw_det_labels"  # 检测标注（与 raw 图片 stem 对应的 .txt）
 CLS_DIR      = DATASETS_DIR / "classification"  # 分类数据集（工具自动生成）
 DET_DIR      = DATASETS_DIR / "detection"       # 检测数据集
 

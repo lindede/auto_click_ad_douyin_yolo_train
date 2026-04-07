@@ -1,13 +1,12 @@
 names:
-- DouyinEarningTasksPageInfo
-- DouyinOpenChestRewardsPageInfo
-- DouyinTotalRewardsPageInfo
-- DouyinNextAdPageInfo
-- DouyinAdShowPageInfo
-- DouyinHomePageInfo
-- AndroidDesktopPageInfo
-- OtherPageInfo
-nc: 8
-path: D:\ldd\AI\app\auto_click_ad_douyin_yolo_train\datasets\classification
+- HomePage
+- VideoPage
+- TaskPage
+- AdPage
+- PopupPage
+- AndroidDesktopPage
+- OtherPage
+nc: 7
+path: D:\ldd\AI\app\auto_click_ad_douyin_yolo_train_newcls_kuaishou\datasets\classification
 train: train
 val: val

@@ -36,7 +36,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from configs.labels import DetClass
-from configs.settings import DET_DIR, IMG_WIDTH, IMG_HEIGHT
+from configs.settings import DET_DIR, IMG_WIDTH, IMG_HEIGHT, DATASETS_DIR
 
 IMG_EXTS  = {'.jpg', '.jpeg', '.png', '.bmp', '.webp'}
 DISPLAY_H = 640
@@ -415,10 +415,11 @@ class DetReviewTool:
 def main():
     parser = argparse.ArgumentParser(description='检测标注审核工具')
     parser.add_argument('--img_dir',   type=Path,
-                        default=DET_DIR / 'images' / 'train',
-                        help='图片目录（默认: datasets/detection/images/train）')
-    parser.add_argument('--label_dir', type=Path, default=None,
-                        help='标注输出目录（默认: 与img_dir同级的labels/同名子目录）')
+                        default=DATASETS_DIR / 'raw',
+                        help='图片目录（默认: datasets/raw）')
+    parser.add_argument('--label_dir', type=Path, 
+                        default=DATASETS_DIR / 'raw_det_labels',
+                        help='标注输出目录（默认: datasets/raw_det_labels')
     parser.add_argument('--model',     type=str,  default=None,
                         help='检测模型路径 (.pt/.onnx)，用于半自动预标注')
     args = parser.parse_args()
