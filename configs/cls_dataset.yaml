@@ -7,6 +7,6 @@ names:
 - AndroidDesktopPage
 - OtherPage
 nc: 7
-path: D:\ldd\AI\app\auto_click_ad_douyin_yolo_train_newcls_kuaishou\datasets\classification
+path: D:\ldd\AI\app\auto_click_ad_douyin_yolo_train_newcls_wukong\datasets\classification
 train: train
 val: val

@@ -9,11 +9,11 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 
 # ── scrcpy 截图分辨率 ────────────────────────────────────────
-IMG_WIDTH  = 255   # 像素
-IMG_HEIGHT = 567   # 像素
+IMG_WIDTH  = 424   # 像素
+IMG_HEIGHT = 944   # 像素
 
 # ── YOLO 训练参数 ────────────────────────────────────────────
-YOLO_IMGSZ  = 640   # 训练输入尺寸（标准640，会letterbox填充）
+YOLO_IMGSZ  = 960   # 训练输入尺寸（标准640，会letterbox填充）
 EPOCHS_CLS  = 100   # 分类模型训练轮数
 EPOCHS_DET  = 100   # 检测模型训练轮数
 BATCH_SIZE  = 16    # 批大小（CPU训练可适当减小）

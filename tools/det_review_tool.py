@@ -29,6 +29,7 @@ import sys
 from pathlib import Path
 
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import ttk
 from PIL import Image, ImageTk
 
@@ -372,6 +373,12 @@ class DetReviewTool:
         self.canvas.delete('all')
         self.canvas.create_image(0, 0, anchor='nw', image=self._photo)
 
+        # 用于测量文字像素宽高，避免标签溢出画布
+        label_font = tkfont.Font(family='Consolas', size=8, weight='bold')
+        txt_pad_x = 3
+        txt_pad_y = 1
+        label_fg  = '#11111b'  # 与彩色背景形成对比
+
         for i, b in enumerate(self.boxes):
             cx1, cy1 = self._img_to_canvas(b.x1, b.y1)
             cx2, cy2 = self._img_to_canvas(b.x2, b.y2)
@@ -380,9 +387,39 @@ class DetReviewTool:
             outline= SEL_COLOR if i == self.selected else color
             self.canvas.create_rectangle(cx1, cy1, cx2, cy2,
                                          outline=outline, width=width)
-            self.canvas.create_text(cx1 + 2, cy1 + 2, anchor='nw',
-                                    text=f"{b.cls_id}:{b.cls_name}",
-                                    fill=outline, font=('Consolas', 8, 'bold'))
+
+            # 标签绘制在检测框“上面或下面”，并提供不透明背景
+            label_text = f"{b.cls_id}:{b.cls_name}"
+            txt_w = label_font.measure(label_text)
+            txt_h = label_font.metrics('linespace')
+            bg_w  = txt_w + txt_pad_x * 2
+            bg_h  = txt_h + txt_pad_y * 2
+
+            # 水平位置：尽量贴左侧，但超出则右移并钳制到画布内
+            x = cx1 + 2
+            x = max(0, x)
+            if x + bg_w > DISPLAY_W:
+                x = max(0, DISPLAY_W - bg_w)
+
+            # 垂直位置：优先画在框上方；上方放不下则画在框下方
+            y_above = cy1 - bg_h - 2
+            if y_above >= 0:
+                y = y_above
+            else:
+                y_below = cy2 + 2
+                if y_below + bg_h <= DISPLAY_H:
+                    y = y_below
+                else:
+                    # 如果上下都放不下，就把它钳制到画布底部（仍保持“优先框下”）
+                    y = max(0, min(y_below, DISPLAY_H - bg_h))
+
+            self.canvas.create_rectangle(x, y, x + bg_w, y + bg_h,
+                                           fill=outline, outline=outline, width=0)
+            self.canvas.create_text(x + txt_pad_x, y + txt_pad_y,
+                                    anchor='nw',
+                                    text=label_text,
+                                    fill=label_fg,
+                                    font=label_font)
 
         # 更新信息栏
         total = len(self.images)

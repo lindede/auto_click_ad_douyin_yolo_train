@@ -13,7 +13,7 @@
 | Ultralytics | 8.4.26 |
 | conda 环境 | `yolo` |
 | 运行设备 | CPU（Intel Core i7-7700） |
-| 截图分辨率 | **255 × 567**（scrcpy 固定分辨率） |
+| 截图分辨率 | **424 × 944**（scrcpy 固定分辨率） |
 | 推理频率 | 1 张 / 秒 |
 
 ---
@@ -23,7 +23,7 @@
 ### 两阶段推理流程
 
 ```
-scrcpy 截图 (255×567)
+scrcpy 截图 (424×944)
         │
         ▼
 ┌─────────────────────┐
@@ -282,8 +282,8 @@ print(result.detections)       # [Detection(watch_ad_to_earn_button, ...), ...]
 
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
-| `IMG_WIDTH / IMG_HEIGHT` | `255 / 567` | scrcpy 截图固定分辨率 |
-| `YOLO_IMGSZ` | `640` | YOLO 训练输入尺寸（letterbox 填充） |
+| `IMG_WIDTH / IMG_HEIGHT` | `424 / 944` | scrcpy 截图固定分辨率 |
+| `YOLO_IMGSZ` | `960` | YOLO 训练输入尺寸（letterbox 填充） |
 | `EPOCHS_CLS / EPOCHS_DET` | `100` | 最大训练轮数（early stop 由 patience 控制） |
 | `BATCH_SIZE` | `16` | CPU 训练可调小至 8 |
 | `PATIENCE` | `20` | 连续 N 轮无提升则提前停止 |

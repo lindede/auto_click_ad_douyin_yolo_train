@@ -30,6 +30,6 @@ names:
 - de_baidu_lite_app_icon
 - de_close_app_button
 nc: 30
-path: D:\ldd\AI\app\auto_click_ad_douyin_yolo_train_newcls_kuaishou\datasets\detection
+path: D:\ldd\AI\app\auto_click_ad_douyin_yolo_train_newcls_wukong\datasets\detection
 train: images/train
 val: images/val
